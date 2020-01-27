@@ -24,20 +24,23 @@
     }
     else
     {
-        if (choices.IsEmpty())
+
+
+        if (string.IsNullOrEmpty(myname))
+        {
+            <p style="color:firebrick">Please enter your name.</p>
+        }
+
+        else if (choices.IsEmpty() )
         {
             <p style="color:firebrick">Please choose a meal item.</p>
             choices = "";
         }
 
-        else if (string.IsNullOrEmpty(myname))
-        {
-            <p style="color:firebrick">Please enter your name.</p>
-        }
-        
+
         else
         {
-            
+
             //for a checkbox list, your choices will be a set of strings
             //   separated by a delimiter (in this case is a comma)
             //to divide up this set of strings use the .Split(delimiter) method
@@ -56,7 +59,7 @@
 }
 else
 {
-    <p>IsPost = false</p>
+    //<p>IsPost = false</p>
     choices = "";
 }
 
@@ -71,11 +74,11 @@ else
                 <div>
                     <label id="lblGameGroup"><strong>Choose your meal items:</strong></label><br />
                     <input type="checkbox" id="GameGroup" name="GameGroup" value="Steak"
-                           @*@(Array.IndexOf(choices.Split(','), "PS4") >= 0 ? "checked" : "")*@ />Steak<br />
+                           @*@(Array.IndexOf(choices.Split(','), "Steak") >= 0 ? "checked" : "")*@ />Steak<br />
                     <input type="checkbox" id="GameGroup" name="GameGroup" value="Seafood"
-                           @*@(Array.IndexOf(choices.Split(','), "Computer") >= 0 ? "checked" : "")*@ />Seafood<br />
+                           @*@(Array.IndexOf(choices.Split(','), "Seafood") >= 0 ? "checked" : "")*@ />Seafood<br />
                     <input type="checkbox" id="GameGroup" name="GameGroup" value="Vegetables"
-                           @*@(Array.IndexOf(choices.Split(','), "XBOX One") >= 0 ? "checked" : "")*@ />Vegetables<br />
+                           @*@(Array.IndexOf(choices.Split(','), "Vegetables") >= 0 ? "checked" : "")*@ />Vegetables<br />
                 </div>
             </div>
 
