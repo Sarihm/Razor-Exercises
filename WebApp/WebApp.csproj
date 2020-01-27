@@ -98,6 +98,7 @@
     <Content Include="ExercisePages\Exercise02.cshtml" />
     <Content Include="Ex01-04-Instructions.docx" />
     <Content Include="CPSC1517-Jan-2020 Planning Calendar-RLaw.doc" />
+    <None Include="_Two-column.cshtml" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />

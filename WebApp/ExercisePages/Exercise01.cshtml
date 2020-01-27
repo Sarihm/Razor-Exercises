@@ -1,8 +1,94 @@
 ﻿@{
     Layout = "~/_Layout.cshtml";
     Page.Title = string.Format("Razor - {0}", "Exercise 01");
+    var myname = Request.Form["dataentry"];
+    string choices = "";
 }
 
 @section banner {
     <h1>@Page.Title</h1>
 }
+
+@if (IsPost)
+{
+    //<p>IsPost = true</p>
+    //you can delay retreiving your data input until you actually have
+    //  a postback
+    var thebutton = Request.Form["theButton"];
+    choices = Request.Form["GameGroup"];
+    if (thebutton.Equals("reset"))
+    {
+        <p>Please select the meal of your choice.</p>
+        choices = "";
+        myname = "";
+    }
+    else
+    {
+        if (choices.IsEmpty())
+        {
+            <p style="color:firebrick">Please choose a meal item.</p>
+            choices = "";
+        }
+
+        else if (string.IsNullOrEmpty(myname))
+        {
+            <p style="color:firebrick">Please enter your name.</p>
+        }
+        
+        else
+        {
+            
+            //for a checkbox list, your choices will be a set of strings
+            //   separated by a delimiter (in this case is a comma)
+            //to divide up this set of strings use the .Split(delimiter) method
+            //to process the collection of strings in choices, consider using foreach
+            <p>
+                Hey @myname, I see you have the following meal entries:
+                <ul>
+                    @foreach (var platform in choices.Split(','))
+                    {
+                        <li>@platform</li>
+                    }
+                </ul>
+            </p>
+        }
+    }
+}
+else
+{
+    <p>IsPost = false</p>
+    choices = "";
+}
+
+<form class="offset-sm-0 mx-auto" id="theform" method="post">
+        <div class="row justify-content-between">
+            <div class="offset-1">
+                <label id="label1" for="dataentry"><strong>Customer Name:</strong></label>&nbsp;&nbsp;
+                <input class="form-inline" type="text" id="dataentry" name="dataentry" value="@myname" />
+            </div>
+
+            <div>
+                <div>
+                    <label id="lblGameGroup"><strong>Choose your meal items:</strong></label><br />
+                    <input type="checkbox" id="GameGroup" name="GameGroup" value="Steak"
+                           @*@(Array.IndexOf(choices.Split(','), "PS4") >= 0 ? "checked" : "")*@ />Steak<br />
+                    <input type="checkbox" id="GameGroup" name="GameGroup" value="Seafood"
+                           @*@(Array.IndexOf(choices.Split(','), "Computer") >= 0 ? "checked" : "")*@ />Seafood<br />
+                    <input type="checkbox" id="GameGroup" name="GameGroup" value="Vegetables"
+                           @*@(Array.IndexOf(choices.Split(','), "XBOX One") >= 0 ? "checked" : "")*@ />Vegetables<br />
+                </div>
+            </div>
+
+            <br /><br />
+        </div>
+        <div>
+            <button type="submit" id="theButton" name="theButton"
+                    value="submit" class="btn btn-primary">
+                Submit
+            </button>&nbsp;&nbsp;
+            <button type="submit" id="theButton" name="theButton"
+                    value="reset" class="btn btn-light">
+                Reset
+            </button>
+        </div>
+</form>
