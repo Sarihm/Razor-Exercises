@@ -1,0 +1,42 @@
+﻿@{
+    Layout = "~/_Layout.cshtml";
+    Page.Title = string.Format("Razor - {0}", "WebGrid Display");
+
+    var cid = Request.QueryString["cid"];
+    <p>Your choice was: @cid</p>
+
+    if (string.IsNullOrEmpty(cid))
+    {
+        Response.Redirect("Exercise022.cshtml");
+    }
+
+    var db = Database.Open("CHINOOK");
+    var artistquery = @"SELECT Title, ReleaseYear, ReleaseLabel
+        FROM Albums
+        WHERE ArtistId = @0
+        ORDER BY ReleaseYear";
+    var artistinfo = db.Query(artistquery, cid);
+
+    var albumquery = @"SELECT ArtistId
+    FROM Albums
+    WHERE AlbumId = @0";
+    var artistname = db.QueryValue(albumquery, cid);
+
+    var gridinstance = new WebGrid(artistinfo, rowsPerPage: 5);
+}
+@section banner {<h1>WebGrid Display</h1>}
+<div class="offset-1">
+    <h3>Albums for this Artist: @artistname</h3>
+    <div class="col-11">
+        @gridinstance.GetHtml(
+            tableStyle: "table table-striped table-bordered table-hover",
+            mode: WebGridPagerModes.All,
+            firstText: "Start",
+            lastText: "Ends",
+            columns: gridinstance.Columns(
+               gridinstance.Column(columnName: "Title", header: "Album Name"),
+               gridinstance.Column(columnName: "ReleaseYear", header: "Release Year"),
+               gridinstance.Column(columnName: "ReleaseLabel", header: "Release Label", canSort: false)))
+    </div>
+</div>
+
