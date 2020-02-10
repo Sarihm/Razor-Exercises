@@ -3,32 +3,29 @@
     Page.Title = string.Format("Razor - {0}", "CRUD-Insert-with-Validation");
 
     //consider your need for global variables
-    var productname = "";
-    var supplierid = "0";
-    var categoryid = "0";
-    var quantityperunit = "";
-    var unitprice = "";
-    var unitsinstock = "";
-    var unitsonorder = "";
-    var reorderlevel = "";
+    var title = "";
+    var artist = "";
+    var year = "";
+    var label = "";
+
 
     //obtain two lists: SupplierList and CategoryList
-    var db = Database.Open("NWDB");
+    var db = Database.Open("CHINOOK");
 
-    var supplierquery = @"SELECT SupplierID, CompanyName FROM Suppliers Order by CompanyName";
-    var supplierrecords = db.Query(supplierquery);
-    List<SelectListItem> supplieritems = new List<SelectListItem>();
-    supplieritems.Add(new SelectListItem
+    var artistquery = @"SELECT ArtistId, Name FROM Artists Order by Name";
+    var artistrecords = db.Query(artistquery);
+    List<SelectListItem> artistitems = new List<SelectListItem>();
+    artistitems.Add(new SelectListItem
     {
         Value = "0",
         Text = "select..."
     });
-    foreach (var record in supplierrecords)
+    foreach (var record in artistrecords)
     {
-        supplieritems.Add(new SelectListItem
+        artistitems.Add(new SelectListItem
         {
-            Value = record.SupplierID.ToString(),
-            Text = record.CompanyName
+            Value = record.ArtistId.ToString(),
+            Text = record.Name
         });
     }
 
@@ -100,26 +97,20 @@
 @if (IsPost)
 {
     // retreive the data from the form
-    productname = Request.Form["ProductName"];
-    supplierid = Request.Form["SupplierList"];
-    categoryid = Request.Form["CategoryList"];
-    quantityperunit = Request.Form["QuantityPerUnit"];
-    unitprice = Request.Form["UnitPrice"];
-    unitsinstock = Request.Form["UnitsInStock"];
-    unitsonorder = Request.Form["UnitsOnOrder"];
-    reorderlevel = Request.Form["ReorderLevel"];
+    title = Request.Form["Title"];
+    artist = Request.Form["Artist"];
+    year = Request.Form["Year"];
+    label = Request.Form["Label"];
+
     var thebutton = Request.Form["FormButton"];
 
     if (thebutton.Equals("Clear"))
     {
-        productname = "";
-        supplierid = "0";
-        categoryid = "0";
-        quantityperunit = "";
-        unitprice = "";
-        unitsinstock = "";
-        unitsonorder = "";
-        reorderlevel = "";
+        title = "";
+        artist = "0";
+        year = "0";
+        label = "";
+
     }
     else
     {
