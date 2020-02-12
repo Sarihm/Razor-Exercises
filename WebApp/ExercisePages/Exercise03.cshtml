@@ -1,139 +1,157 @@
 ﻿@{
-    Layout = "~/_Layout.cshtml";
-    Page.Title = string.Format("Razor - {0}", "CRUD-Insert-with-Validation");
+                Layout = "~/_Layout.cshtml";
+                Page.Title = string.Format("Razor - {0}", "CRUD-Insert-with-Validation");
 
-    //consider your need for global variables
-    var title = "";
-    var artist = "";
-    var year = "";
-    var label = "";
+                //consider your need for global variables
+                var title = "";
+                var artist = "";
+                var year = "";
+                var label = "";
 
 
-    //obtain two lists: SupplierList and CategoryList
-    var db = Database.Open("CHINOOK");
+                //obtain two lists: SupplierList and CategoryList
+                var db = Database.Open("CHINOOK");
 
-    var artistquery = @"SELECT ArtistId, Name FROM Artists Order by Name";
-    var artistrecords = db.Query(artistquery);
-    List<SelectListItem> artistitems = new List<SelectListItem>();
-    artistitems.Add(new SelectListItem
-    {
-        Value = "0",
-        Text = "select..."
-    });
-    foreach (var record in artistrecords)
-    {
-        artistitems.Add(new SelectListItem
-        {
-            Value = record.ArtistId.ToString(),
-            Text = record.Name
-        });
-    }
+                var artistquery = @"SELECT ArtistId, Name FROM Artists Order by Name";
+                var artistrecords = db.Query(artistquery);
+                List<SelectListItem> artistitems = new List<SelectListItem>();
+                artistitems.Add(new SelectListItem
+                {
+                    Value = "0",
+                    Text = "select..."
+                });
+                foreach (var record in artistrecords)
+                {
+                    artistitems.Add(new SelectListItem
+                    {
+                        Value = record.ArtistId.ToString(),
+                        Text = record.Name
+                    });
+                }
 
-    var categoryquery = @"SELECT CategoryID, CategoryName FROM Categories Order by CategoryName";
-    var categoryrecords = db.Query(categoryquery);
-    List<SelectListItem> categoryitems = new List<SelectListItem>();
-    categoryitems.Add(new SelectListItem
-    {
-        Value = "0",
-        Text = "select..."
-    });
-    foreach (var record in categoryrecords)
-    {
-        categoryitems.Add(new SelectListItem
-        {
-            Value = record.CategoryId.ToString(),
-            Text = record.CategoryName
-        });
-    }
+                var albumquery = @"SELECT AlbumId, Title FROM Albums Order by AlbumId";
+                var albumrecords = db.Query(albumquery);
+                List<SelectListItem> albumitems = new List<SelectListItem>();
+                albumitems.Add(new SelectListItem
+                {
+                    Value = "0",
+                    Text = "select..."
+                });
+                foreach (var record in albumrecords)
+                {
+                    albumitems.Add(new SelectListItem
+                    {
+                        Value = record.AlbumId.ToString(),
+                        Text = record.Title
+                    });
+                }
 
-    //these are validator controls that execute on the server side
+                var yearquery = @"SELECT ReleaseYear, Title FROM Albums Order by ReleaseYear";
+                var yearrecords = db.Query(yearquery);
+                List<SelectListItem> releaseyear = new List<SelectListItem>();
+                releaseyear.Add(new SelectListItem
+                {
+                    Value = "0",
+                    Text = "select..."
+                });
+                foreach (var record in yearrecords)
+                {
+                    releaseyear.Add(new SelectListItem
+                    {
+                        Value = record.ReleaseYear.ToString(),
+                        Text = record.ReleaseYear
+                    });
+                }
 
-    Validation.Add("ProductName",
-         Validator.Required("Product name is required"),
-          Validator.StringLength(160, 1, "Product name is limited to 160 characters"));
+                var labelquery = @"SELECT AlbumId, Title FROM Albums Order by ReleaseLabel";
+                var labelrecords = db.Query(labelquery);
+                List<SelectListItem> releaselabel = new List<SelectListItem>();
+                releaselabel.Add(new SelectListItem
+                {
+                    Value = "0",
+                    Text = "select..."
+                });
+                foreach (var record in labelrecords)
+                {
+                    releaselabel.Add(new SelectListItem
+                    {
+                        Value = record.AlbumId.ToString(),
+                        Text = record.ReleaseLabel
+                    });
+                }
 
-    Validation.Add("CategoryList",
-          Validator.Range(1, 9, "Category is required"));
+                //these are validator controls that execute on the server side
 
-    //QuantityPerUnit is nullable which means 0 required characters
-    Validation.Add("QuantityPerUnit",
-         Validator.StringLength(40, 0, "Quantity per unit is limited to 40 characters"));
+                Validation.Add("Title",
+                     Validator.Required("Title is required"),
+                      Validator.StringLength(160, 1, "Limited to 160 characters"));
 
-    Validation.Add("UnitPrice",
-        Validator.Decimal("Unit price is a money field."),
-        Validator.Range(0.00, double.MaxValue, "Unit price must be 0.00 or more"));
+                Validation.Add("ArtistId",
+                      Validator.Range(1, 275));
 
-    Validation.Add("UnitsInStock",
-        Validator.Integer("Units in stock must be a number."),
-        Validator.Range(0.00, 2000.0, "Units in stock must be between 0 and 2000"));
+                //QuantityPerUnit is nullable which means 0 required characters
+                Validation.Add("ReleaseYear",
+                    Validator.Required("Year is out of range, 1950 to today"),
+                     Validator.StringLength(DateTime.Today.Year));
 
-    Validation.Add("UnitsOnOrder",
-        Validator.Integer("Units on order must be a number."),
-        Validator.Range(0.00, 2000.0, "Units on order must be between 0 and 2000"));
+                Validation.Add("ReleaseLabel",
+                    Validator.StringLength(50, 1, "Label is limited to 50 characters"));
 
-    Validation.Add("ReorderLevel",
-        Validator.Integer("Reorder level must be a number."),
-        Validator.Range(0.00, 2000.0, "Reorder level must be between 0 and 2000"));
+                //compare two fields together (ie password)
+                //Validation.Add("ConfirmPassword",
+                //    Validator.Required("Missing confirm password"),
+                //      Validator.StringLength(160, 1, "Confirm password is too long"),
+                //      Validator.EqualsTo("Password", "Password not confirmed"));
 
-    //compare two fields together (ie password)
-    //Validation.Add("ConfirmPassword",
-    //    Validator.Required("Missing confirm password"),
-    //      Validator.StringLength(160, 1, "Confirm password is too long"),
-    //      Validator.EqualsTo("Password", "Password not confirmed"));
+                //pattern testing (ie PostalCode)
+                //Validation.Add("PostalCode",
+                //     Validator.Regex(@"^[A-Za-z][0-9][A-Za-z][0-9][A-Za-z][0-9]$",
+                //     "Postal Code format invalid (T7T7T7"));
+            }
 
-    //pattern testing (ie PostalCode)
-    //Validation.Add("PostalCode",
-    //     Validator.Regex(@"^[A-Za-z][0-9][A-Za-z][0-9][A-Za-z][0-9]$",
-    //     "Postal Code format invalid (T7T7T7"));
-}
-@section head{
+            @section head{
     <link href="~/Content/MyCssCopy.css" rel="stylesheet" />
 }
 
-@section banner{
+            @section banner{
     <h1>@Page.Title</h1>
 }
 
-@if (IsPost)
-{
-    // retreive the data from the form
-    title = Request.Form["Title"];
-    artist = Request.Form["Artist"];
-    year = Request.Form["Year"];
-    label = Request.Form["Label"];
-
-    var thebutton = Request.Form["FormButton"];
-
-    if (thebutton.Equals("Clear"))
-    {
-        title = "";
-        artist = "0";
-        year = "0";
-        label = "";
-
-    }
-    else
-    {
-        //Validation of data
-        //Validation.IsValid() is used to execute the server side validation
-        //the if statement DOES NOT need an else as the Validation control
-        //message will appear in your Summary() or Message() controls
-        if (Validation.IsValid())  //good data
-        {
-            try
+            @if (IsPost)
             {
-                var inscommand = @"INSERT INTO Products (ProductName, SupplierID, CategoryID,
-                        QuantityPerUnit, UnitPrice, UnitsInStock, UnitsOnOrder,
-                        ReorderLevel, Discontinued)
-                        VALUES(@0, @1, @2, @3, @4, @5, @6, @7, 0)";
-                db.Execute(inscommand, productname,
-                    supplierid.Equals("0") ? null : supplierid,
-                    categoryid.Equals("0") ? null : categoryid,
-                    string.IsNullOrEmpty(quantityperunit) ? null : quantityperunit,
-                    string.IsNullOrEmpty(unitprice) ? null : unitprice,
-                    string.IsNullOrEmpty(unitsinstock) ? null : unitsinstock,
-                    string.IsNullOrEmpty(unitsonorder) ? null : unitsonorder,
-                    string.IsNullOrEmpty(reorderlevel) ? null : reorderlevel);
+                // retreive the data from the form
+                title = Request.Form["Title"];
+                artist = Request.Form["ArtistId"];
+                year = Request.Form["ReleaseYear"];
+                label = Request.Form["ReleaseLabel"];
+
+                var thebutton = Request.Form["FormButton"];
+
+                if (thebutton.Equals("Clear"))
+                {
+                    title = "";
+                    artist = "0";
+                    year = "0";
+                    label = "";
+
+                }
+                else
+                {
+                    //Validation of data
+                    //Validation.IsValid() is used to execute the server side validation
+                    //the if statement DOES NOT need an else as the Validation control
+                    //message will appear in your Summary() or Message() controls
+                    if (Validation.IsValid())  //good data
+                    {
+                        try
+                        {
+                            var inscommand = @"INSERT INTO Albums (Title, ReleasedYear, ReleaseLabel)
+                            VALUES(@0, @1, @2, @3)";
+                            db.Execute(inscommand, title,
+                                artist.Equals("0") ? null : artist,
+                                string.IsNullOrEmpty(year) ? null : year,
+                                string.IsNullOrEmpty(title) ? null : title,
+                                string.IsNullOrEmpty(label) ? null : label);
                 <div class="col-12 text-center">
                     <p style="color:green">
                         Product has been added
@@ -160,46 +178,27 @@ else
     <legend>Web Pages with Validation</legend>
     <form id="theform" method="post">
         <div class="row offset-1">
-            <label class="label" for="ProductName">ProductName:</label>&nbsp;&nbsp;
-            @*<span><input name="ProductName" type="text" value="@productname" class="@Validation.ClassFor("ProductName")"/></span>*@
-            <span>@Html.TextBox("ProductName", productname)</span>
-            @Html.ValidationMessage("ProductName")
+            <label class="label" for="Title">Title:</label>&nbsp;&nbsp;
+            @*<span><input name="Title" type="text" value="@title" class="@Validation.ClassFor("Title")"/></span>*@
+            <span>@Html.TextBox("Title", title)</span>
+            @Html.ValidationMessage("Title")
         </div>
         <div class="row offset-1">
-            <label class="label" for="SupplierList">Supplier:</label>&nbsp;&nbsp;
-            <span>@Html.DropDownList("SupplierList", supplieritems)</span>
-            @Html.ValidationMessage("SupplierList")
+            <label class="label" for="ArtistId">Supplier:</label>&nbsp;&nbsp;
+            <span>@Html.DropDownList("ArtistId", artistitems)</span>
+            @Html.ValidationMessage("ArtistId")
         </div>
         <div class="row offset-1">
-            <label class="label" for="CategoryList">Category:</label>&nbsp;&nbsp;
-            <span>@Html.DropDownList("CategoryList", categoryitems)</span>
-            @Html.ValidationMessage("CategoryList")
+            <label class="label" for="ReleaseYear">Category:</label>&nbsp;&nbsp;
+            <span>@Html.DropDownList("ReleaseYear", releaseyear)</span>
+            @Html.ValidationMessage("ReleaseYear")
         </div>
         <div class="row offset-1">
             <label class="label" for="QuantityPerUnit">QuantityPerUnit:</label>&nbsp;&nbsp;
-            <span>@Html.TextBox("QuantityPerUnit", quantityperunit)</span>
-            @Html.ValidationMessage("QuantityPerUnit")
+            <span>@Html.TextBox("ReleaseLabel", releaselabel)</span>
+            @Html.ValidationMessage("ReleaseLabel")
         </div>
-        <div class="row offset-1">
-            <label class="label" for="UnitPrice">UnitPrice:</label>&nbsp;&nbsp;
-            <span>@Html.TextBox("UnitPrice", unitprice)</span>
-            @Html.ValidationMessage("UnitPrice")
-        </div>
-        <div class="row offset-1">
-            <label class="label" for="UnitsInStock">UnitsInStock:</label>&nbsp;&nbsp;
-            <span>@Html.TextBox("UnitsInStock", unitsinstock)</span>
-            @Html.ValidationMessage("UnitsInStock")
-        </div>
-        <div class="row offset-1">
-            <label class="label" for="UnitsOnOrder">UnitsOnOrder:</label>&nbsp;&nbsp;
-            <span>@Html.TextBox("UnitsOnOrder", unitsonorder)</span>
-            @Html.ValidationMessage("UnitsOnOrder")
-        </div>
-        <div class="row offset-1">
-            <label class="label" for="ReorderLevel">ReorderLevel:</label>&nbsp;&nbsp;
-            <span>@Html.TextBox("ReorderLevel", reorderlevel)</span>
-            @Html.ValidationMessage("ReorderLevel")
-        </div>
+        
         <div class="row offset-1">
             <button type="submit" id="FormButton" name="FormButton"
                     class="btn btn-primary" value="Add">
