@@ -1,66 +1,37 @@
 ﻿@{
     Layout = "~/_Layout.cshtml";
-    Page.Title = string.Format("Razor - {0}", "CRUD - Update/Discontinue/Delete with Validation");
+    Page.Title = string.Format("Razor - {0}", "CRUD - WebGrid Display");
 
     var pid = Request.QueryString["pid"];
-    if (pid.IsEmpty())
+    <p>A search was done with the following partial string for AlbumId: @pid</p>
+
+    if (string.IsNullOrEmpty(pid))
     {
         Response.Redirect("Exercise04a.cshtml");
     }
-    var title = Request.Form["Title"];
-    var artist = Request.Form["Artist"];
-    var year = Request.Form["Year"];
-    var label = Request.Form["Label"];
-    var message = "";
-
-    //these are validator controls execute on the server side
-
-    // ---------------------   Validations ------------------------------
-
-    Validation.Add("Title",
-         Validator.Required("Title is required"),
-         Validator.StringLength(160, 1, "Title is limited to 160 characters"));
-
-    Validation.Add("ArtistId",
-         Validator.Range(1, 275));
-
-    Validation.Add("ReleaseYear",
-        Validator.Required("Year is out of range, 1950 to today"),
-         Validator.StringLength(DateTime.Today.Year));
-
-    Validation.Add("ReleaseLabel",
-        Validator.StringLength(50, 1, "Label is limited to 50 characters"));
-
-
-    // ---------------------   database selects ------------------------------
 
     var db = Database.Open("CHINOOK");
+    var partialstring = "%" + pid + "%";
+    var albumquery = @"SELECT AlbumId, Title, ArtistId, ReleaseYear, ReleaseLabel"
+                + "FROM Albums"
+                + "WHERE AlbumId LIKE @0 "
+                + "ORDER BY Title";
+    var albuminfo = db.Query(albumquery, partialstring);
 
-    var titleStatement = "SELECT ArtistID, Title "
-                        + "FROM Albums "
-                        + "ORDER BY Title";
-    var querytitle = db.Query(titleStatement);
-
-    var artistStatement = "SELECT ArtistID, Name "
-                        + "FROM Artists "
-                        + "ORDER BY Name";
-    var queryartist = db.Query(artistStatement);
-
-    var queryStatement = "SELECT AlbumID, Title, ArtistId, ReleaseYear, ReleaseLabel"
-                        + "FROM Albums "
-                        + "WHERE AlbumID = @0";
-    var queryProducts = db.QuerySingle(queryStatement, pid);
-    if (queryProducts == null)
-    {
-        message = "Product NOT found";
-    }
+    var grid = new WebGrid(albuminfo, rowsPerPage: 5);
 }
-
-@section head{
-    @*<link href="~/Content/MyCssCopy.css" rel="stylesheet" />*@
-}
-
-@section banner{
-    <h1>@Page.Title</h1>
-}
-
+@section banner {<h1>@Page.Title</h1>}
+<div class="offset-1">
+    <div class="col-11">
+        @grid.GetHtml("table table-bordered table-striped table-hover",
+        mode: WebGridPagerModes.All,
+        lastText: "Last",
+        firstText: "First",
+        columns: grid.Columns(
+            grid.Column(columnName: "Title", header: "Title"),
+            grid.Column(columnName: "ArtistId"),
+            grid.Column(columnName: "ReleaseYear", header: "Release Year"),
+            grid.Column(columnName: "ReleaseLabel", header: "Release Label"),
+            grid.Column(header: "", format: @<text><a href="~/ExercisePages/Exercise04c.cshtml?pid=@item.AlbumID">Edit</a></text>)));
+    </div>
+</div>

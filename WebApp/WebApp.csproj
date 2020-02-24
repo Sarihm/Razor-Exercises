@@ -107,8 +107,9 @@
     <Content Include="ExercisePages\Exercise022.cshtml" />
     <Content Include="ExercisePages\Exercise02c.cshtml" />
     <Content Include="ExercisePages\Exercise03.cshtml" />
-    <Content Include="ExercisePages\Exercise04b.cshtml" />
+    <Content Include="ExercisePages\Exercise04c.cshtml" />
     <Content Include="ExercisePages\Exercise04a.cshtml" />
+    <Content Include="ExercisePages\Exercise04b.cshtml" />
     <None Include="_Two-column.cshtml" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
