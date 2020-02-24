@@ -12,74 +12,28 @@
     //obtain two lists: SupplierList and CategoryList
     var db = Database.Open("CHINOOK");
 
-    var artistquery = @"SELECT ArtistId, Name FROM Artists Order by Name";
-    var artistrecords = db.Query(artistquery);
-    List<SelectListItem> artistitems = new List<SelectListItem>();
-    artistitems.Add(new SelectListItem
-    {
-        Value = "0",
-        Text = "select..."
-    });
-    foreach (var record in artistrecords)
-    {
-        artistitems.Add(new SelectListItem
-        {
-            Value = record.ArtistId.ToString(),
-            Text = record.Name
-        });
-    }
 
-    var albumquery = @"SELECT AlbumId, Title FROM Albums Order by Title";
-    var albumrecords = db.Query(albumquery);
-    List<SelectListItem> albumitems = new List<SelectListItem>();
-    albumitems.Add(new SelectListItem
-    {
-        Value = "0",
-        Text = "select..."
-    });
-    foreach (var record in albumrecords)
-    {
-        albumitems.Add(new SelectListItem
-        {
-            Value = record.AlbumId.ToString(),
-            Text = record.Title
-        });
-    }
+    var artistquery = "SELECT ArtistID, Name "
+            + "FROM Artists "
+            + "Order by Name";
+    var artistlist = db.Query(artistquery);
 
-    var yearquery = @"SELECT ReleaseYear FROM Albums Order by ReleaseYear";
-    var yearrecords = db.Query(yearquery);
-    List<SelectListItem> yearitems = new List<SelectListItem>();
-    yearitems.Add(new SelectListItem
-    {
-        Value = "0",
-        Text = "select..."
-    });
-    foreach (var record in yearrecords)
-    {
-        yearitems.Add(new SelectListItem
-        {
-            Value = record.ReleaseYear.ToString(),
-            Text = record.ReleaseYear
-        });
-    }
+    var albumquery = "SELECT AlbumID, Title "
+            + "FROM Albums "
+            + "Order by Title";
+    var albumlist = db.Query(albumquery);
 
+    var yearquery = "SELECT ReleaseYear, Name "
+            + "FROM Albums "
+            + "Order by ReleaseYear";
+    var yearlist = db.Query(yearquery);
 
-    var labelquery = @"SELECT ReleaseLabel, Title FROM Albums Order by ReleaseLabel";
-    var labelrecords = db.Query(labelquery);
-    List<SelectListItem> labelitems = new List<SelectListItem>();
-    labelitems.Add(new SelectListItem
-    {
-        Value = "0",
-        Text = "select..."
-    });
-    foreach (var record in labelrecords)
-    {
-        labelitems.Add(new SelectListItem
-        {
-            Value = record.ReleaseLabel.ToString(),
-            Text = record.ReleaseLabel
-        });
-    }
+ 
+    var labelquery = "SELECT ReleaseLabel, Title"
+            + "FROM Albums "
+            + "Order by ReleaseLabel";
+    var labellist = db.Query(labelquery);
+
 
     //these are validator controls that execute on the server side
 
@@ -165,41 +119,70 @@ else
 
 }
 
-<fieldset>
-    <legend>Web Pages with Validation</legend>
-    <form id="theform" method="post">
-        <div class="row offset-1">
-            <label class="label" for="Title">Title:</label>&nbsp;&nbsp;
-            @*<span><input name="Title" type="text" value="@title" class="@Validation.ClassFor("Title")"/></span>*@
-            <span>@Html.TextBox("Title", title)</span>
-            @Html.ValidationMessage("Title")
-        </div>
-        <div class="row offset-1">
-            <label class="label" for="ArtistId">Artist:</label>&nbsp;&nbsp;
-            <span>@Html.DropDownList("ArtistId", artistitems)</span>
-            @Html.ValidationMessage("ArtistId")
-        </div>
-        <div class="row offset-1">
-            <label class="label" for="ReleaseYear">Release Year:</label>&nbsp;&nbsp;
-            <span>@Html.TextBox("ReleaseYear", yearitems)</span>
-            @Html.ValidationMessage("ReleaseYear")
-        </div>
-        <div class="row offset-1">
-            <label class="label" for="ReleaseLabel">Release Label:</label>&nbsp;&nbsp;
-            <span>@Html.TextBox("ReleaseLabel", labelitems)</span>
-            @Html.ValidationMessage("ReleaseLabel")
-        </div>
-        
-        <div class="row offset-1">
-            <button type="submit" id="FormButton" name="FormButton"
-                    class="btn btn-primary" value="Add">
-                Add
-            </button>
-            <button type="submit" id="FormButton" name="FormButton" formnovalidate
-                    class="btn" value="Clear">
-                Clear
-            </button>
-        </div>
-    </form>
-</fieldset>
 @Html.ValidationSummary()
+
+<form id="theForm" action="" method="post">
+    <div class="row row-cols-2">
+        
+        @*Title Box*@
+        <div class="col text-right">
+            <label id="lbltitle" for="Title">Title</label>
+        </div>
+        <div class="col text-left">
+            <input type="text" name="Title" value="@title" />
+        </div><br />
+
+        @*Artist Box*@
+        <div class="col text-right">
+            <label id="lblartist" for="artist">Artist</label>
+        </div>
+        <div class="col text-left">
+            <select name="ArtistList">
+                <option value="0">select...</option>
+                @foreach (var acollectionrow in artistlist)
+                {
+                    if (acollectionrow.ArtistID.ToString() == artist)
+                    {
+                        <option value="@acollectionrow[0]" selected>@acollectionrow[1]</option>
+                    }
+                    else
+                    {
+                        <option value="@acollectionrow[0]">@acollectionrow[1]</option>
+                    }
+                }
+            </select>
+        </div><br />
+
+        @*Year Box*@
+        <div class="col text-right">
+            <label id="lblYear" for="Year">Year</label>
+        </div>
+        <div class="col text-left">
+            <input type="number" name="Year" value="@year" />
+        </div><br />
+
+        @*label Box*@
+        <div class="col text-right">
+            <label id="lblLabel" for="Label">Label</label>
+        </div>
+        <div class="col text-left">
+            <input type="text" name="UnitPrice" value="@label"/>
+        </div><br />
+    </div>
+    <div class="row">
+        <div class="col-12 text-center">
+            <input type="submit" id="theAdd" name="FormButton"
+                   class="btn btn-primary" value="Add" />
+            <input type="submit" id="theClear" name="FormButton" formnovalidate
+                   class="btn" value="Clear" />
+        </div>
+    </div>
+    @* confirmation can be done on a button click using javascript
+        we will ask the user to confirm the insertion of a product*@
+    <script type="text/javascript">
+        document.getElementById("theAdd").onclick = ConfirmAdd;
+        function ConfirmAdd() {
+            return confirm("Are you sure you want to ADD @title?");
+        }
+    </script>
+</form>
