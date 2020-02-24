@@ -3,7 +3,7 @@
     Page.Title = string.Format("Razor - {0}", "CRUD - WebGrid Display");
 
     var pid = Request.QueryString["pid"];
-    <p>A search was done with the following partial string for AlbumId: @pid</p>
+    <p>A search was done with the following partial string for Artist: @pid</p>
 
     if (string.IsNullOrEmpty(pid))
     {
@@ -12,10 +12,12 @@
 
     var db = Database.Open("CHINOOK");
     var partialstring = "%" + pid + "%";
-    var albumquery = @"SELECT AlbumId, Title, ArtistId, ReleaseYear, ReleaseLabel"
-                + "FROM Albums"
-                + "WHERE AlbumId LIKE @0 "
-                + "ORDER BY Title";
+
+    var albumquery = @"SELECT AlbumId, Title, "
+                + "ArtistId, ReleaseYear, ReleaseLabel "
+                + "FROM Albums "
+                + "WHERE Title LIKE @0 "
+                + "ORDER BY AlbumId";
     var albuminfo = db.Query(albumquery, partialstring);
 
     var grid = new WebGrid(albuminfo, rowsPerPage: 5);

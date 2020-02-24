@@ -12,6 +12,7 @@
     var artist = Request.Form["Artist"];
     var year = Request.Form["Year"];
     var label = Request.Form["Label"];
+    var discontinued = Request.Form["Discontinued"];
     var thebutton = Request.Form["theButton"];
 
     var message = "";
@@ -39,7 +40,25 @@
 
 
     // ---------------------   database selects ------------------------------
-
+    if (IsPost)
+    {
+        //discontinued is a checkbox
+        //the possible values from the check box is null (not checked) or "on" (checked)
+        //the acceptable sql values for a bit are 0 and 1
+        if (discontinued == null)
+        {
+            discontinued = "0";
+        }
+        else
+        {
+            discontinued = "1";
+        }
+    }
+    else
+    {
+        album = pid;
+        discontinued = "0";
+    }
     var db = Database.Open("CHINOOK");
 
     var titleStatement = "SELECT AlbumId, Title "
@@ -52,7 +71,9 @@
                         + "ORDER BY Name";
     var queryartist = db.Query(artistStatement);
 
-    var queryStatement = "SELECT AlbumId, Title, ArtistId, ReleaseYear, ReleaseLabel"
+
+    var queryStatement = "SELECT AlbumID, Title, ArtistId, "
+                        + "ReleaseLabel, ReleaseYear "
                         + "FROM Albums "
                         + "WHERE AlbumId = @0";
     var queryProducts = db.QuerySingle(queryStatement, pid);
@@ -157,7 +178,7 @@ else //IsPost=false
     {
         album = queryProducts.AlbumId.ToString();
         title = queryProducts.Title;
-        artist = queryProducts.Name;
+        artist = queryProducts.ArtistId == null ? "0" : queryProducts.ArtistId.ToString();
         year = queryProducts.ReleaseYear == null ? "0" : queryProducts.ReleaseYear.ToString();
         label = queryProducts.ReleaseLabel == null ? "0" : queryProducts.ReleaseLabel.ToString();
     }
@@ -191,83 +212,9 @@ else //IsPost=false
             <label id="lblArtist" for="Artist">Artist</label>
         </div>
         <div class="col text-left">
-            <select name="Artist">
-                <option value="0">select...</option>
-                @foreach (var acollectionrow in querySuppliers)
-                {
-                    if (acollectionrow.SupplierID.ToString() == supplierid)
-                    {
-                        <option value="@acollectionrow[0]" selected>@acollectionrow[1]</option>
-                    }
-                    else
-                    {
-                        <option value="@acollectionrow[0]">@acollectionrow[1]</option>
-                    }
-                }
-            </select>
+            <input type="text" name="Artist" value="@artist" />
         </div><br />
-        <div class="col text-right">
-            <label id="lblCategoryList" for="CatgoryList">Category</label>
-        </div>
-        <div class="col text-left">
-            <select name="CategoryList">
-                <option value="0">select...</option>
-                @foreach (var acollectionrow in queryCategories)
-                {
-                    if (acollectionrow.CategoryID.ToString() == categoryid)
-                    {
-                        <option value="@acollectionrow[0]" selected>@acollectionrow[1]</option>
-                    }
-                    else
-                    {
-                        <option value="@acollectionrow[0]">@acollectionrow[1]</option>
-                    }
-                }
-            </select>
-        </div><br />
-        <div class="col text-right">
-            <label id="lblQuantityPerUnit" for="QuasntityPerUnit">Quantity Per Unit</label>
-        </div>
-        <div class="col text-left">
-            <input type="text" name="QuantityPerUnit" value="@quantityperunit" />
-        </div><br />
-        <div class="col text-right">
-            <label id="lblUnitPrice" for="UnitPrice">Unit Price</label>
-        </div>
-        <div class="col text-left">
-            <input type="number" name="UnitPrice" value="@unitprice" step="0.01" />
-        </div><br />
-        <div class="col text-right">
-            <label id="lblUnitsInStock" for="UnitsInStock">Units In Stock</label>
-        </div>
-        <div class="col text-left">
-            <input type="number" name="UnitsInStock" value="@unitsinstock" />
-        </div><br />
-        <div class="col text-right">
-            <label id="lblUnitsOnOrder" for="UnitsOnOrder">Units On Order</label>
-        </div>
-        <div class="col text-left">
-            <input type="number" name="UnitsOnOrder" value="@unitsonorder" /><br />
-        </div><br />
-        <div class="col text-right">
-            <label id="lblReorderLevel" for="ReorderLevel">ReorderLevel</label>
-        </div>
-        <div class="col text-left">
-            <input type="number" name="ReorderLevel" value="@reorderlevel" />
-        </div><br />
-        <div class="col text-right">
-            <label id="lblDiscontinued" for="Discontinued">Discontinued</label>
-        </div>
-        <div class="col text-left">
-            @if (discontinued.Equals("True") || (discontinued == "1"))
-            {
-                <input type="checkbox" name="Discontinued" checked value="1" />
-            }
-            else
-            {
-                <input type="checkbox" name="Discontinued" value="0" />
-            }
-        </div><br />
+
     </div>
     <div class="row">
         <div class="col-12 text-center">
@@ -289,3 +236,18 @@ else //IsPost=false
             </button>
         </div>
     </div>
+
+    @* confirmation can be done on a button click using javascript
+        we will ask the user to confirm the discontinuing of a product*@
+    <script type="text/javascript">
+        document.getElementById("theDiscontinue").onclick = ConfirmDiscontinue;
+        function ConfirmDiscontinue() {
+            return confirm("Are you sure you want to DISCONTINUE @title?");
+        }
+        document.getElementById("theDelete").onclick = ConfirmDelete;
+        function ConfirmDelete() {
+            return confirm("Are you sure you want to DELETE @title?");
+        }
+    </script>
+</form>
+

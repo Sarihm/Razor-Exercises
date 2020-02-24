@@ -13,23 +13,23 @@
     var db = Database.Open("CHINOOK");
 
 
-    var artistquery = "SELECT ArtistID, Name "
+    var artistquery = "SELECT ArtistId, Name "
             + "FROM Artists "
             + "Order by Name";
     var artistlist = db.Query(artistquery);
 
-    var albumquery = "SELECT AlbumID, Title "
+    var albumquery = "SELECT AlbumId, Title "
             + "FROM Albums "
             + "Order by Title";
     var albumlist = db.Query(albumquery);
 
-    var yearquery = "SELECT ReleaseYear, Name "
+    var yearquery = "SELECT ReleaseYear "
             + "FROM Albums "
             + "Order by ReleaseYear";
     var yearlist = db.Query(yearquery);
 
 
-    var labelquery = "SELECT ReleaseLabel, Title"
+    var labelquery = "SELECT ReleaseLabel "
             + "FROM Albums "
             + "Order by ReleaseLabel";
     var labellist = db.Query(labelquery);
@@ -38,11 +38,11 @@
     //these are validator controls that execute on the server side
 
     Validation.Add("Title",
-Validator.Required("Title is required"),
-Validator.StringLength(160, 1, "Limited to 160 characters"));
+    Validator.Required("Title is required"),
+    Validator.StringLength(160, 1, "Limited to 160 characters"));
 
     Validation.Add("ArtistId",
-          Validator.Range(1, 275));
+          Validator.Range(1, 275, "Select an Artist"));
 
     //QuantityPerUnit is nullable which means 0 required characters
     Validation.Add("ReleaseYear",
@@ -99,7 +99,7 @@ Validator.StringLength(160, 1, "Limited to 160 characters"));
                     string.IsNullOrEmpty(label) ? null : label);
                 <div class="col-12 text-center">
                     <p style="color:green">
-                        Product has been added
+                        Album has been added
                     </p>
                 </div>
             }
@@ -166,7 +166,7 @@ else
             <label id="lblLabel" for="Label">Label</label>
         </div>
         <div class="col text-left">
-            <input type="text" name="UnitPrice" value="@label" />
+            <input type="text" name="Label" value="@label" />
         </div><br />
     </div>
     <div class="row">
