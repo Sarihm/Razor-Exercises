@@ -28,7 +28,7 @@
             + "Order by ReleaseYear";
     var yearlist = db.Query(yearquery);
 
- 
+
     var labelquery = "SELECT ReleaseLabel, Title"
             + "FROM Albums "
             + "Order by ReleaseLabel";
@@ -52,51 +52,51 @@ Validator.StringLength(160, 1, "Limited to 160 characters"));
     Validation.Add("ReleaseLabel",
         Validator.StringLength(50, 1, "Label is limited to 50 characters"));
 
-            }
+}
 
-            @section head{
+@section head{
     <link href="~/Content/MyCssCopy.css" rel="stylesheet" />
 }
 
-            @section banner{
+@section banner{
     <h1>@Page.Title</h1>
 }
 
-            @if (IsPost)
+@if (IsPost)
+{
+    // retreive the data from the form
+    title = Request.Form["Title"];
+    artist = Request.Form["Artist"];
+    year = Request.Form["Year"];
+    label = Request.Form["Label"];
+
+    var thebutton = Request.Form["FormButton"];
+
+    if (thebutton.Equals("Clear"))
+    {
+        title = "";
+        artist = "0";
+        year = "";
+        label = "";
+
+    }
+    else
+    {
+        //Validation of data
+        //Validation.IsValid() is used to execute the server side validation
+        //the if statement DOES NOT need an else as the Validation control
+        //message will appear in your Summary() or Message() controls
+        if (Validation.IsValid())  //good data
+        {
+            try
             {
-                // retreive the data from the form
-                title = Request.Form["Title"];
-                artist = Request.Form["ArtistId"];
-                year = Request.Form["ReleaseYear"];
-                label = Request.Form["ReleaseLabel"];
-
-                var thebutton = Request.Form["FormButton"];
-
-                if (thebutton.Equals("Clear"))
-                {
-                    title = "";
-                    artist = "0";
-                    year = "";
-                    label = "";
-
-                }
-                else
-                {
-                    //Validation of data
-                    //Validation.IsValid() is used to execute the server side validation
-                    //the if statement DOES NOT need an else as the Validation control
-                    //message will appear in your Summary() or Message() controls
-                    if (Validation.IsValid())  //good data
-                    {
-                        try
-                        {
-                            var inscommand = @"INSERT INTO Albums (Title, ArtistId, ReleasedYear, ReleaseLabel)
-                            VALUES(@0, @1, @2, @3)";
-                            db.Execute(inscommand, title,
-                                artist.Equals("0") ? null : artist,
-                                string.IsNullOrEmpty(title) ? null : title,
-                                string.IsNullOrEmpty(year) ? null : year,                               
-                                string.IsNullOrEmpty(label) ? null : label);
+                var inscommand = @"INSERT INTO Albums (Title, ArtistId, ReleasedYear, ReleaseLabel)
+                VALUES(@0, @1, @2, @3)";
+                db.Execute(inscommand, title,
+                    artist.Equals("0") ? null : artist,
+                    string.IsNullOrEmpty(title) ? null : title,
+                    string.IsNullOrEmpty(year) ? null : year,
+                    string.IsNullOrEmpty(label) ? null : label);
                 <div class="col-12 text-center">
                     <p style="color:green">
                         Product has been added
@@ -123,10 +123,10 @@ else
 
 <form id="theForm" action="" method="post">
     <div class="row row-cols-2">
-        
+
         @*Title Box*@
         <div class="col text-right">
-            <label id="lbltitle" for="Title">Title</label>
+            <label id="lblTitle" for="Title">Title</label>
         </div>
         <div class="col text-left">
             <input type="text" name="Title" value="@title" />
@@ -134,10 +134,10 @@ else
 
         @*Artist Box*@
         <div class="col text-right">
-            <label id="lblartist" for="artist">Artist</label>
+            <label id="lblArtist" for="artist">Artist</label>
         </div>
         <div class="col text-left">
-            <select name="ArtistList">
+            <select name="Artist">
                 <option value="0">select...</option>
                 @foreach (var acollectionrow in artistlist)
                 {
@@ -166,7 +166,7 @@ else
             <label id="lblLabel" for="Label">Label</label>
         </div>
         <div class="col text-left">
-            <input type="text" name="UnitPrice" value="@label"/>
+            <input type="text" name="UnitPrice" value="@label" />
         </div><br />
     </div>
     <div class="row">
