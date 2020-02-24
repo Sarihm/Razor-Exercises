@@ -12,6 +12,8 @@
     var artist = Request.Form["Artist"];
     var year = Request.Form["Year"];
     var label = Request.Form["Label"];
+    var thebutton = Request.Form["theButton"];
+
     var message = "";
 
     //these are validator controls execute on the server side
@@ -162,3 +164,128 @@ else //IsPost=false
 
 }
 @Html.ValidationSummary()
+
+<div class="col-12 text-center">
+    <p style="color:green">
+        @message
+    </p>
+</div>
+
+<form id="theForm" action="" method="post">
+    <div class="row row-cols-2">
+
+        <div class="col text-right">
+            <label id="lblAlbum" for="Album">Album ID</label>
+        </div>
+        <div class="col text-left">
+            <input type="number" name="Album" value="@album" readonly />
+        </div><br />
+
+        <div class="col text-right">
+            <label id="lblTitle" for="Title">Title</label>
+        </div>
+        <div class="col text-left">
+            <input type="text" name="Title" value="@title" />
+        </div><br />
+        <div class="col text-right">
+            <label id="lblArtist" for="Artist">Artist</label>
+        </div>
+        <div class="col text-left">
+            <select name="Artist">
+                <option value="0">select...</option>
+                @foreach (var acollectionrow in querySuppliers)
+                {
+                    if (acollectionrow.SupplierID.ToString() == supplierid)
+                    {
+                        <option value="@acollectionrow[0]" selected>@acollectionrow[1]</option>
+                    }
+                    else
+                    {
+                        <option value="@acollectionrow[0]">@acollectionrow[1]</option>
+                    }
+                }
+            </select>
+        </div><br />
+        <div class="col text-right">
+            <label id="lblCategoryList" for="CatgoryList">Category</label>
+        </div>
+        <div class="col text-left">
+            <select name="CategoryList">
+                <option value="0">select...</option>
+                @foreach (var acollectionrow in queryCategories)
+                {
+                    if (acollectionrow.CategoryID.ToString() == categoryid)
+                    {
+                        <option value="@acollectionrow[0]" selected>@acollectionrow[1]</option>
+                    }
+                    else
+                    {
+                        <option value="@acollectionrow[0]">@acollectionrow[1]</option>
+                    }
+                }
+            </select>
+        </div><br />
+        <div class="col text-right">
+            <label id="lblQuantityPerUnit" for="QuasntityPerUnit">Quantity Per Unit</label>
+        </div>
+        <div class="col text-left">
+            <input type="text" name="QuantityPerUnit" value="@quantityperunit" />
+        </div><br />
+        <div class="col text-right">
+            <label id="lblUnitPrice" for="UnitPrice">Unit Price</label>
+        </div>
+        <div class="col text-left">
+            <input type="number" name="UnitPrice" value="@unitprice" step="0.01" />
+        </div><br />
+        <div class="col text-right">
+            <label id="lblUnitsInStock" for="UnitsInStock">Units In Stock</label>
+        </div>
+        <div class="col text-left">
+            <input type="number" name="UnitsInStock" value="@unitsinstock" />
+        </div><br />
+        <div class="col text-right">
+            <label id="lblUnitsOnOrder" for="UnitsOnOrder">Units On Order</label>
+        </div>
+        <div class="col text-left">
+            <input type="number" name="UnitsOnOrder" value="@unitsonorder" /><br />
+        </div><br />
+        <div class="col text-right">
+            <label id="lblReorderLevel" for="ReorderLevel">ReorderLevel</label>
+        </div>
+        <div class="col text-left">
+            <input type="number" name="ReorderLevel" value="@reorderlevel" />
+        </div><br />
+        <div class="col text-right">
+            <label id="lblDiscontinued" for="Discontinued">Discontinued</label>
+        </div>
+        <div class="col text-left">
+            @if (discontinued.Equals("True") || (discontinued == "1"))
+            {
+                <input type="checkbox" name="Discontinued" checked value="1" />
+            }
+            else
+            {
+                <input type="checkbox" name="Discontinued" value="0" />
+            }
+        </div><br />
+    </div>
+    <div class="row">
+        <div class="col-12 text-center">
+            <button type="submit" name="theButton" id="theUpdate" class="btn btn-primary"
+                    value="update">
+                Update
+            </button>&nbsp;&nbsp;&nbsp;
+            <button type="submit" name="theButton" id="theDiscontinue" class="btn btn-primary" formnovalidate
+                    value="discontinue">
+                Discontinue
+            </button>&nbsp;&nbsp;&nbsp;
+            <button type="submit" name="theButton" id="theDelete" class="btn btn-primary" formnovalidate
+                    value="delete">
+                Delete Record
+            </button>&nbsp;&nbsp;&nbsp;
+            <button type="submit" name="theButton" id="theCancel" class="btn btn-primary" formnovalidate
+                    value="backtosearch">
+                Back to Search
+            </button>
+        </div>
+    </div>
