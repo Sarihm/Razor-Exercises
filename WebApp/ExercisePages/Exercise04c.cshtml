@@ -7,6 +7,7 @@
     {
         Response.Redirect("Exercise04a.cshtml");
     }
+    var album = Request.Form["Album"];
     var title = Request.Form["Title"];
     var artist = Request.Form["Artist"];
     var year = Request.Form["Year"];
@@ -16,6 +17,9 @@
     //these are validator controls execute on the server side
 
     // ---------------------   Validations ------------------------------
+
+    Validation.Add("AlbumId",
+         Validator.Range(1, 275));
 
     Validation.Add("Title",
          Validator.Required("Title is required"),
@@ -36,19 +40,19 @@
 
     var db = Database.Open("CHINOOK");
 
-    var titleStatement = "SELECT ArtistID, Title "
+    var titleStatement = "SELECT AlbumId, Title "
                         + "FROM Albums "
                         + "ORDER BY Title";
     var querytitle = db.Query(titleStatement);
 
-    var artistStatement = "SELECT ArtistID, Name "
+    var artistStatement = "SELECT ArtistId, Name "
                         + "FROM Artists "
                         + "ORDER BY Name";
     var queryartist = db.Query(artistStatement);
 
-    var queryStatement = "SELECT AlbumID, Title, ArtistId, ReleaseYear, ReleaseLabel"
+    var queryStatement = "SELECT AlbumId, Title, ArtistId, ReleaseYear, ReleaseLabel"
                         + "FROM Albums "
-                        + "WHERE AlbumID = @0";
+                        + "WHERE AlbumId = @0";
     var queryProducts = db.QuerySingle(queryStatement, pid);
     if (queryProducts == null)
     {
@@ -64,3 +68,97 @@
     <h1>@Page.Title</h1>
 }
 
+@if (IsPost)
+{
+    if (thebutton.Equals("backtosearch"))
+    {
+        Response.Redirect("Exercise04a.cshtml");
+    }
+
+    if (Validation.IsValid())
+    {
+        try
+        {
+            if (thebutton.Equals("discontinue"))
+            {
+                var sqlcommand = "UPDATE Products SET "
+                                + "Discontinued = 1 "
+                                + "WHERE ProductID = @0";
+                var rowsaffected = db.Execute(sqlcommand, title);
+                if (rowsaffected > 0)
+                {
+                    discontinued = "1";
+                    message = "Product has been DISCONTINUED";
+                }
+                else
+                {
+                    message = "Product NOT found";
+                }
+            }
+            else if (thebutton.Equals("update"))
+            {
+                var sqlcommand = "UPDATE Albums SET "
+                                + "Title = @0, "
+                                + "ArtistId = @1, "
+                                + "ReleaseYear = @2, "
+                                + "ReleaseLabel = @3, "
+                                + "WHERE AlbumId = @4";
+                var rowsaffected = db.Execute(sqlcommand, title,
+                    year.Equals("0") ? null : year,
+                    label.Equals("0") ? null : label,
+                    string.IsNullOrEmpty(title) ? null : title,
+                    string.IsNullOrEmpty(artist) ? null : artist);
+
+                if (rowsaffected > 0)
+                {
+                    message = "Album has been UPDATED";
+                }
+                else
+                {
+                    message = "Album NOT found";
+                }
+            }
+            else if (thebutton.Equals("delete"))
+            {
+                var deleteStatement = "Delete Products WHERE AlbumId = @0";
+
+                var rows = db.Execute(deleteStatement, album);
+                if (rows == 1)
+                {
+                    message = "Album has been DELETED";
+                }
+                else
+                {
+                    message = "Album NOT found";
+                }
+
+                album = "";
+                artist = "";
+                title = "";
+                year = "0";
+                label = "";
+            }
+        }
+        catch (Exception ex)
+        {
+            <div class="col-12 text-center">
+                <p style="color:firebrick; font-size:large">
+                    Processing error: @ex.Message
+                </p>
+            </div>
+        }
+    }
+}
+else //IsPost=false
+{
+    if (message != "Product NOT found")
+    {
+        album = queryProducts.AlbumId.ToString();
+        title = queryProducts.Title;
+        artist = queryProducts.Name;
+        year = queryProducts.ReleaseYear == null ? "0" : queryProducts.ReleaseYear.ToString();
+        label = queryProducts.ReleaseLabel == null ? "0" : queryProducts.ReleaseLabel.ToString();
+    }
+
+}
+@Html.ValidationSummary()
