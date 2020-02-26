@@ -11,13 +11,15 @@
     }
 
     var db = Database.Open("CHINOOK");
+
     var artistquery = @"SELECT AlbumId, Title, ReleaseYear, ReleaseLabel
         FROM Albums
         WHERE ArtistId = @0
         ORDER BY Title";
     var artistinfo = db.Query(artistquery, cid);
 
-    var albumquery = @"SELECT Name
+ 
+    var albumquery = @"SELECT Name, ArtistId
     FROM Artists
     WHERE ArtistId = @0";
     var artistname = db.QueryValue(albumquery, cid);
@@ -34,7 +36,7 @@
             firstText: "Start",
             lastText: "Ends",
             columns: gridinstance.Columns(
-               gridinstance.Column(columnName: "ArtistId", header: "ID"),
+               gridinstance.Column(columnName: "AlbumId", header: "ID"),
                gridinstance.Column(columnName: "Title", header: "Album Name"),
                gridinstance.Column(columnName: "ReleaseYear", header: "Release Year"),
                gridinstance.Column(columnName: "ReleaseLabel", header: "Release Label", canSort: false)))

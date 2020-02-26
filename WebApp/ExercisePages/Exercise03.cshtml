@@ -18,39 +18,20 @@
             + "Order by Name";
     var artistlist = db.Query(artistquery);
 
-    var albumquery = "SELECT AlbumId, Title "
-            + "FROM Albums "
-            + "Order by Title";
-    var albumlist = db.Query(albumquery);
-
-    var yearquery = "SELECT ReleaseYear "
-            + "FROM Albums "
-            + "Order by ReleaseYear";
-    var yearlist = db.Query(yearquery);
-
-
-    var labelquery = "SELECT ReleaseLabel "
-            + "FROM Albums "
-            + "Order by ReleaseLabel";
-    var labellist = db.Query(labelquery);
-
-
     //these are validator controls that execute on the server side
 
     Validation.Add("Title",
-    Validator.Required("Title is required"),
-    Validator.StringLength(160, 1, "Limited to 160 characters"));
+        Validator.Required("Title is required"),
+        Validator.StringLength(160, 1, "Limited to 160 characters"));
 
     Validation.Add("ArtistId",
-          Validator.Range(1, 275, "Select an Artist"));
+        Validator.Range(1, 300, "Select an Artist"));
 
-    //QuantityPerUnit is nullable which means 0 required characters
     Validation.Add("ReleaseYear",
-        Validator.Required("Year is out of range, 1950 to today"),
-         Validator.StringLength(DateTime.Today.Year));
+        Validator.Range(1950, DateTime.Today.Year, "Year is out of range, 1950 to today"));
 
     Validation.Add("ReleaseLabel",
-        Validator.StringLength(50, 1, "Label is limited to 50 characters"));
+Validator.StringLength(50, 1, "Label is limited to 50 characters"));
 
 }
 
@@ -63,40 +44,37 @@
 }
 
 @if (IsPost)
-{
-    // retreive the data from the form
-    title = Request.Form["Title"];
-    artist = Request.Form["Artist"];
-    year = Request.Form["Year"];
-    label = Request.Form["Label"];
-
-    var thebutton = Request.Form["FormButton"];
-
-    if (thebutton.Equals("Clear"))
-    {
-        title = "";
-        artist = "0";
-        year = "";
-        label = "";
-
-    }
-    else
-    {
-        //Validation of data
-        //Validation.IsValid() is used to execute the server side validation
-        //the if statement DOES NOT need an else as the Validation control
-        //message will appear in your Summary() or Message() controls
-        if (Validation.IsValid())  //good data
         {
-            try
+            // retreive the data from the form
+            title = Request.Form["Title"];
+            artist = Request.Form["Artist"];
+            year = Request.Form["Year"];
+            label = Request.Form["Label"];
+
+            var thebutton = Request.Form["FormButton"];
+
+            if (thebutton.Equals("Clear"))
             {
-                var inscommand = @"INSERT INTO Albums (Title, ArtistId, ReleasedYear, ReleaseLabel)
-                VALUES(@0, @1, @2, @3)";
-                db.Execute(inscommand, title,
-                    artist.Equals("0") ? null : artist,
-                    string.IsNullOrEmpty(title) ? null : title,
-                    string.IsNullOrEmpty(year) ? null : year,
-                    string.IsNullOrEmpty(label) ? null : label);
+                title = "";
+                artist = "0";
+                year = "";
+                label = "";
+
+            }
+            else
+            {
+                //Validation of data
+                //Validation.IsValid() is used to execute the server side validation
+                //the if statement DOES NOT need an else as the Validation control
+                //message will appear in your Summary() or Message() controls
+                if (Validation.IsValid())  //good data
+                {
+                    try
+                    {
+                        var inscommand = @"INSERT INTO Albums "
+                        + "(Title, ArtistId, ReleaseYear, ReleaseLabel) "
+                        + "VALUES(@0, @1, @2, @3)";
+                        db.Execute(inscommand, title, artist, year, label);
                 <div class="col-12 text-center">
                     <p style="color:green">
                         Album has been added
@@ -120,7 +98,6 @@ else
 }
 
 @Html.ValidationSummary()
-
 <form id="theForm" action="" method="post">
     <div class="row row-cols-2">
 

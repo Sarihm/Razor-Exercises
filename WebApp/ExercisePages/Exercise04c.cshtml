@@ -32,8 +32,7 @@
          Validator.Range(1, 275));
 
     Validation.Add("ReleaseYear",
-        Validator.Required("Year is out of range, 1950 to today"),
-         Validator.StringLength(DateTime.Today.Year));
+        Validator.Range(1950, DateTime.Today.Year, "Year is out of range, 1950 to today"));
 
     Validation.Add("ReleaseLabel",
         Validator.StringLength(50, 1, "Label is limited to 50 characters"));
@@ -61,16 +60,10 @@
     }
     var db = Database.Open("CHINOOK");
 
-    var titleStatement = "SELECT AlbumId, Title "
-                        + "FROM Albums "
-                        + "ORDER BY Title";
-    var querytitle = db.Query(titleStatement);
-
     var artistStatement = "SELECT ArtistId, Name "
                         + "FROM Artists "
                         + "ORDER BY Name";
     var queryartist = db.Query(artistStatement);
-
 
     var queryStatement = "SELECT AlbumID, Title, ArtistId, "
                         + "ReleaseLabel, ReleaseYear "
@@ -126,11 +119,7 @@
                                 + "ReleaseYear = @2, "
                                 + "ReleaseLabel = @3, "
                                 + "WHERE AlbumId = @4";
-                var rowsaffected = db.Execute(sqlcommand, title,
-                    year.Equals("0") ? null : year,
-                    label.Equals("0") ? null : label,
-                    string.IsNullOrEmpty(title) ? null : title,
-                    string.IsNullOrEmpty(artist) ? null : artist);
+                var rowsaffected = db.Execute(sqlcommand, title, artist, year, label, album);
 
                 if (rowsaffected > 0)
                 {
@@ -143,7 +132,7 @@
             }
             else if (thebutton.Equals("delete"))
             {
-                var deleteStatement = "Delete Products WHERE AlbumId = @0";
+                var deleteStatement = "Delete Albums WHERE AlbumId = @0";
 
                 var rows = db.Execute(deleteStatement, album);
                 if (rows == 1)
@@ -196,7 +185,7 @@ else //IsPost=false
     <div class="row row-cols-2">
 
         <div class="col text-right">
-            <label id="lblAlbum" for="Album">Album ID</label>
+            <label id="lblAlbum" for="Album">Album Id</label>
         </div>
         <div class="col text-left">
             <input type="number" name="Album" value="@album" readonly />
@@ -209,11 +198,18 @@ else //IsPost=false
             <input type="text" name="Title" value="@title" />
         </div><br />
         <div class="col text-right">
-            <label id="lblArtist" for="Artist">Artist</label>
+            <label id="lblArtist" for="Artist">Release Year</label>
         </div>
         <div class="col text-left">
-            <input type="text" name="Artist" value="@artist" />
+            <input type="text" name="Artist" value="@year" />
         </div><br />
+        <div class="col text-right">
+            <label id="lblArtist" for="Artist">Release Label</label>
+        </div>
+        <div class="col text-left">
+            <input type="text" name="Artist" value="@label" />
+        </div><br />
+
 
     </div>
     <div class="row">
